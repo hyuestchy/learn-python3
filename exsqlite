@@ -1,0 +1,41 @@
+import os,sqlite3
+db_file = os.path.join(os.path.dirname(__file__), 'test.db')
+if os.path.isfile(db_file):
+    os.remove(db_file)
+try:
+    conn = sqlite3.connect('db_file')
+    cursor = conn.cursor()
+    sql_create = """create table report (id varchar(20) primary key, name varchar(20),score int)"""
+    sql_insert = """insert into report (id, name, score) values ('A-001', 'Michael',98),
+    ('A-002', 'Oocarain',56),
+    ('A-003', 'Frozotol',82)"""
+    cursor.execute(sql_create)
+    cursor.execute(sql_insert)
+    print('input success')
+except:
+    print('input error')
+finally:
+    cursor.close()
+    conn.commit()
+    conn.close()
+    print('-'*10,'INPUT OVER','-'*10)
+
+def get_score_in(low,high):
+    try:
+        conn = sqlite3.connect('db_file')
+        cursor = conn.cursor()
+        #sql_select = """select name from report where score betwen ? and ? order by name ,(low,high)"""
+        cursor.execute('select name from report where score between ? and ? order by score',(low,high))
+        values = cursor.fetchall()
+        def f(x):
+            return x[0]
+        return list(map(f,values))
+    except:
+        print('read error')
+    finally:
+         cursor.close()
+         conn.close()
+         print('-'*10,'RUN','-'*10)
+print('20-70:',get_score_in(20,70))
+print('60-85:',get_score_in(60,85))
+print('20-100:',get_score_in(20,100))
